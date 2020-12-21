@@ -59,8 +59,10 @@ func main() {
 			}
 			conn.Noticef(channel, "%s %s #%d (%s)", p.Sender.Login, p.Action, p.Number, p.PullRequest.Title)
 		case github.PushPayload:
-			// This should probably be filtering on
-			// branches.
+			if p.Ref != "refs/heads/master" {
+				return
+			}
+
 			shortMsg := p.HeadCommit.Message
 			idx := strings.Index(shortMsg, "\n")
 			if idx != -1 {
