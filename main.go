@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"strings"
 
 	"github.com/thoj/go-ircevent"
 	"gopkg.in/go-playground/webhooks.v5/github"
@@ -51,14 +52,21 @@ func main() {
 			log.Println("Error parsing hook")
 			return
 		}
-		switch pe := payload.(type) {
+		switch p := payload.(type) {
 		case github.PullRequestPayload:
-			if pe.Action != "opened" && pe.Action != "closed" {
+			if p.Action != "opened" && p.Action != "closed" {
 				return
 			}
-			conn.Noticef(channel, "%s %s #%d (%s)", pe.Sender.Login, pe.Action, pe.Number, pe.PullRequest.Title)
+			conn.Noticef(channel, "%s %s #%d (%s)", p.Sender.Login, p.Action, p.Number, p.PullRequest.Title)
 		case github.PushPayload:
-			conn.Noticef(channel, "%s pushed to %s", pe.Sender.Login, pe.Repository.Name)
+			// This should probably be filtering on
+			// branches.
+			shortMsg := p.HeadCommit.Message
+			idx := strings.Index(shortMsg, "\n")
+			if idx != -1 {
+				shortMsg = shortMsg[0:idx]
+			}
+			conn.Noticef(channel, "%s pushed to %s (%s)", p.Sender.Login, p.Repository.Name, shortMsg)
 		}
 	})
 
