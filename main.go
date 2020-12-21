@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"strings"
+	"syscall"
 
 	"github.com/thoj/go-ircevent"
 	"gopkg.in/go-playground/webhooks.v5/github"
@@ -23,6 +23,14 @@ func main() {
 	if conn == nil {
 		log.Println("conn is nil!  Did you set IRC_NICK?")
 		return
+	}
+
+	// IRC auth config
+	if _, use := os.LookupEnv("IRC_SASL"); use {
+		conn.UseSASL = true
+		conn.SASLLogin = os.Getenv("IRC_USER")
+		conn.SASLPassword = os.Getenv("IRC_PASS")
+		conn.SASLMech = "PLAIN"
 	}
 
 	// IRC startup
@@ -90,5 +98,6 @@ func main() {
 	// Shut down
 	<-done
 	log.Println("exiting")
+	conn.Privmsg(channel, "I'm going away now")
 	conn.Quit()
 }
