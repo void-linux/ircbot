@@ -62,11 +62,17 @@ func main() {
 		}
 		switch p := payload.(type) {
 		case github.PullRequestPayload:
+			if p.Repository.Private {
+				return
+			}
 			if p.Action != "opened" && p.Action != "closed" {
 				return
 			}
 			conn.Noticef(channel, "%s %s #%d (%s)", p.Sender.Login, p.Action, p.Number, p.PullRequest.Title)
 		case github.PushPayload:
+			if p.Repository.Private {
+				return
+			}
 			if p.Ref != "refs/heads/master" {
 				return
 			}
