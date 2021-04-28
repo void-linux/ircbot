@@ -43,6 +43,12 @@ func main() {
 	conn.AddCallback("366", func(e *irc.Event) {
 		log.Println("Connected to Channel")
 	})
+	conn.AddCallback("PRIVMSG", func(e *irc.Event) {
+		switch e.Message() {
+		case "hello?":
+			conn.Privmsgf(channel, "%s: go away, I'm busy", e.Nick)
+		}
+	})
 	err := conn.Connect(serverssl)
 	if err != nil {
 		log.Println(err)
