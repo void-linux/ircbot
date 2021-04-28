@@ -45,7 +45,7 @@ func main() {
 	})
 	conn.AddCallback("PRIVMSG", func(e *irc.Event) {
 		switch e.Message() {
-		case "hello?":
+		case ircnick1 + ": hello?":
 			conn.Privmsgf(channel, "%s: go away, I'm busy", e.Nick)
 		}
 	})
