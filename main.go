@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/thoj/go-ircevent"
+	irc "github.com/thoj/go-ircevent"
 	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
@@ -83,12 +83,24 @@ func main() {
 				return
 			}
 
+			forced := ""
+			if p.Forced {
+				forced = "force-"
+			}
+			n_commits := len(p.Commits)
+			commit_sfx := ""
+			if n_commits > 1 {
+				commit_sfx = "s"
+			}
+			before_sha := p.Before[0:8]
+			after_sha := p.After[0:8]
 			shortMsg := p.HeadCommit.Message
 			idx := strings.Index(shortMsg, "\n")
 			if idx != -1 {
 				shortMsg = shortMsg[0:idx]
 			}
-			conn.Noticef(channel, "%s pushed to %s (%s)", p.Sender.Login, p.Repository.Name, shortMsg)
+			conn.Noticef(channel, "%s %spushed %d commit%s to %s (%s -> %s, new HEAD: %s)", p.Sender.Login, forced, n_commits,
+				commit_sfx, p.Repository.Name, before_sha, after_sha, shortMsg)
 		}
 	})
 
