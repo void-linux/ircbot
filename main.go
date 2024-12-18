@@ -131,7 +131,7 @@ func main() {
 			}
 			n_commits := len(p.Commits)
 			commit_sfx := ""
-			if n_commits > 1 {
+			if n_commits != 1 {
 				commit_sfx = "s"
 			}
 			before_sha := p.Before[0:8]
