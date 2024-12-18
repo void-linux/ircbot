@@ -145,7 +145,7 @@ func main() {
 
 			forced := ""
 			if p.Forced {
-				forced = "force-"
+				forced = "\x0304force-"
 			}
 			n_commits := len(p.Commits)
 			commit_sfx := ""
@@ -159,8 +159,8 @@ func main() {
 			if idx != -1 {
 				shortMsg = shortMsg[0:idx]
 			}
-			conn.Noticef(channel, "%s %spushed %d commit%s to %s (%s -> %s, new HEAD: %s): %s", p.Sender.Login, forced, n_commits,
-				commit_sfx, p.Repository.Name, before_sha, after_sha, shortMsg, p.Compare)
+			conn.Noticef(channel, "[\x0302%s\x0f] \x0307%s\x0f %spushed\x0f \x0308%d\x0f commit%s (%s -> %s, new HEAD: \x0310%s\x0f): \x0314%s\x0f",
+				p.Repository.Name, p.Sender.Login, forced, n_commits, commit_sfx, before_sha, after_sha, shortMsg, p.Compare)
 		case github.ForkPayload:
 			if p.Repository.Private || showforks == "" {
 				return
