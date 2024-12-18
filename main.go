@@ -18,6 +18,7 @@ func main() {
 	channel := os.Getenv("IRC_CHANNEL")
 	ircnick1 := os.Getenv("IRC_NICK")
 	botmode := os.Getenv("IRC_BOTMODE")
+	showforks := os.Getenv("IRC_SHOW_FORKS")
 
 	// Internal state
 	isupport := make(map[string]string)
@@ -91,6 +92,7 @@ func main() {
 		payload, err := hook.Parse(r,
 			github.PushEvent,
 			github.PullRequestEvent,
+			github.ForkEvent,
 		)
 		if err != nil {
 			log.Println("Error parsing hook:", err)
@@ -131,6 +133,11 @@ func main() {
 			}
 			conn.Noticef(channel, "%s %spushed %d commit%s to %s (%s -> %s, new HEAD: %s)", p.Sender.Login, forced, n_commits,
 				commit_sfx, p.Repository.Name, before_sha, after_sha, shortMsg)
+		case github.ForkPayload:
+			if p.Repository.Private || showforks == "" {
+				return
+			}
+			conn.Noticef(channel, "%s forked %s to %s: %s", p.Sender.Login, p.Repository.Name, p.Forkee.FullName, p.Forkee.HTMLURL)
 		}
 	})
 
