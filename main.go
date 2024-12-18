@@ -105,10 +105,19 @@ func main() {
 			if p.Repository.Private || showissues == "" {
 				return
 			}
-			if p.Action != "opened" && p.Action != "closed" && p.Action != "reopened" {
+			action := ""
+			switch p.Action {
+			case "opened":
+				action = "\x0303opened\x0f"
+			case "closed":
+				action = "\x0305closed\x0f"
+			case "reopened":
+				action = "\x0308reopened\x0f"
+			default:
 				return
 			}
-			conn.Noticef(channel, "%s %s #%d [%s] (%s): %s", p.Sender.Login, p.Action, p.Issue.Number, p.Repository.Name, p.Issue.Title, p.Issue.HTMLURL)
+			conn.Noticef(channel, "[\x0302%s\x0f] \x0307%s\x0f %s issue \x0313#%d\x0f (\x0310%s\x0f): \x0314%s\x0f",
+				p.Repository.Name, p.Sender.Login, action, p.Issue.Number, p.Issue.Title, p.Issue.HTMLURL)
 		case github.PullRequestPayload:
 			if p.Repository.Private {
 				return
