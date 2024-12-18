@@ -106,7 +106,7 @@ func main() {
 			if p.Action != "opened" && p.Action != "closed" && p.Action != "reopened" {
 				return
 			}
-			conn.Noticef(channel, "%s %s #%d [%s] (%s)", p.Sender.Login, p.Action, p.Number, p.Repository.Name, p.PullRequest.Title)
+			conn.Noticef(channel, "%s %s #%d [%s] (%s): %s", p.Sender.Login, p.Action, p.Number, p.Repository.Name, p.PullRequest.Title, p.PullRequest.HTMLURL)
 		case github.PushPayload:
 			if p.Repository.Private {
 				return
