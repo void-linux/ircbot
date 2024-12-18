@@ -165,7 +165,8 @@ func main() {
 			if p.Repository.Private || showforks == "" {
 				return
 			}
-			conn.Noticef(channel, "%s forked %s to %s: %s", p.Sender.Login, p.Repository.Name, p.Forkee.FullName, p.Forkee.HTMLURL)
+			conn.Noticef(channel, "[\x0302%s\x0f] \x0307%s\x0f forked the repository to \x0307%s\x0f: \x0314%s\x0f",
+				p.Repository.Name, p.Sender.Login, p.Forkee.FullName, p.Forkee.HTMLURL)
 		}
 	})
 
