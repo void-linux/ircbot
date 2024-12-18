@@ -131,8 +131,8 @@ func main() {
 			if idx != -1 {
 				shortMsg = shortMsg[0:idx]
 			}
-			conn.Noticef(channel, "%s %spushed %d commit%s to %s (%s -> %s, new HEAD: %s)", p.Sender.Login, forced, n_commits,
-				commit_sfx, p.Repository.Name, before_sha, after_sha, shortMsg)
+			conn.Noticef(channel, "%s %spushed %d commit%s to %s (%s -> %s, new HEAD: %s): %s", p.Sender.Login, forced, n_commits,
+				commit_sfx, p.Repository.Name, before_sha, after_sha, shortMsg, p.Compare)
 		case github.ForkPayload:
 			if p.Repository.Private || showforks == "" {
 				return
