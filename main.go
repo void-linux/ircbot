@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	irc "github.com/thoj/go-ircevent"
-	"gopkg.in/go-playground/webhooks.v5/github"
+	"github.com/go-playground/webhooks/v6/github"
 )
 
 func main() {
@@ -63,7 +63,7 @@ func main() {
 			github.PullRequestEvent,
 		)
 		if err != nil {
-			log.Println("Error parsing hook")
+			log.Println("Error parsing hook:", err)
 			return
 		}
 		switch p := payload.(type) {
@@ -71,7 +71,7 @@ func main() {
 			if p.Repository.Private {
 				return
 			}
-			if p.Action != "opened" && p.Action != "closed" {
+			if p.Action != "opened" && p.Action != "closed" && p.Action != "reopened" {
 				return
 			}
 			conn.Noticef(channel, "%s %s #%d [%s] (%s)", p.Sender.Login, p.Action, p.Number, p.Repository.Name, p.PullRequest.Title)
