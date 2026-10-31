@@ -17,6 +17,22 @@ func main() {
 	serverssl := os.Getenv("IRC_SERVER")
 	channel := os.Getenv("IRC_CHANNEL")
 	ircnick1 := os.Getenv("IRC_NICK")
+	botmode := os.Getenv("IRC_BOTMODE")
+
+	// Internal state
+	isupport := make(map[string]string)
+	initialized := false
+
+	initialize := func(e *irc.Event) {
+		if ! initialized {
+			if isupport["BOT"] != "" && botmode != "" {
+				log.Printf("Enabling bot mode (+%s)\n", isupport["BOT"])
+				e.Connection.Mode(ircnick1, "+" + isupport["BOT"])
+			}
+			e.Connection.Join(channel)
+			initialized = true
+		}
+	}
 
 	// Set up the connection
 	conn := irc.IRC(ircnick1, ircnick1)
@@ -36,10 +52,24 @@ func main() {
 	// IRC startup
 	conn.QuitMessage = "I've probably crashed..."
 	conn.UseTLS = true
+	// RPL_WELCOME
 	conn.AddCallback("001", func(e *irc.Event) {
 		log.Println("Connected to Server")
-		conn.Join(channel)
 	})
+	// RPL_ISUPPORT
+	conn.AddCallback("005", func(e *irc.Event) {
+		for _, tok := range e.Arguments {
+			k, v, found := strings.Cut(tok, "=")
+			if found {
+				isupport[k] = v
+			}
+		}
+	})
+	// RPL_ENDOFMOTD
+	conn.AddCallback("376", initialize)
+	// ERR_NOMOTD
+	conn.AddCallback("422", initialize)
+	// RPL_ENDOFNAMES
 	conn.AddCallback("366", func(e *irc.Event) {
 		log.Println("Connected to Channel")
 	})
